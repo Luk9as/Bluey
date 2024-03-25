@@ -912,7 +912,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "414";
+	app.meta.h["build"] = "416";
 	app.meta.h["company"] = "Yo";
 	app.meta.h["file"] = "Bluey";
 	app.meta.h["name"] = "Bluey";
@@ -3417,10 +3417,6 @@ var Main = function() {
 		this.gameHeight = Math.ceil(stageHeight / this.zoom);
 	}
 	flixel_FlxG.autoPause = false;
-	haxe_Log.trace(flixel_FlxG.html5.onMobile,{ fileName : "source/Main.hx", lineNumber : 44, className : "Main", methodName : "new"});
-	if(flixel_FlxG.html5.onMobile) {
-		flixel_FlxG.mouse.set_visible(false);
-	}
 	this.addChild(new flixel_FlxGame(this.gameWidth,this.gameHeight,this.initialState,this.zoom,this.framerate,this.framerate,this.skipSplash,this.startFullscreen));
 };
 $hxClasses["Main"] = Main;
@@ -70037,7 +70033,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 897853;
+	this.version = 275378;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
