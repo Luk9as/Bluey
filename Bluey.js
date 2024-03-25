@@ -912,7 +912,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "418";
+	app.meta.h["build"] = "420";
 	app.meta.h["company"] = "Yo";
 	app.meta.h["file"] = "Bluey";
 	app.meta.h["name"] = "Bluey";
@@ -6457,13 +6457,7 @@ $hxClasses["FullscreenShit"] = FullscreenShit;
 FullscreenShit.__name__ = "FullscreenShit";
 FullscreenShit.__super__ = flixel_FlxSprite;
 FullscreenShit.prototype = $extend(flixel_FlxSprite.prototype,{
-	update: function(elapsed) {
-		flixel_FlxSprite.prototype.update.call(this,elapsed);
-		if(flixel_FlxG.mouse.overlaps(this) && flixel_FlxG.mouse._leftButton.current == 2) {
-			flixel_FlxG.set_fullscreen(!flixel_FlxG.get_fullscreen());
-		}
-	}
-	,__class__: FullscreenShit
+	__class__: FullscreenShit
 });
 var HxOverrides = function() { };
 $hxClasses["HxOverrides"] = HxOverrides;
@@ -7606,7 +7600,15 @@ StateHandler.prototype = $extend(flixel_FlxState.prototype,{
 		if(flixel_FlxG.html5.onMobile) {
 			flixel_FlxG.mouse.set_visible(false);
 		}
-		this.add(new FullscreenShit());
+		this.white = new FullscreenShit();
+		this.add(this.white);
+	}
+	,white: null
+	,update: function(elapsed) {
+		flixel_FlxState.prototype.update.call(this,elapsed);
+		if(flixel_FlxG.mouse.overlaps(this.white) && flixel_FlxG.mouse._leftButton.current == 2) {
+			flixel_FlxG.set_fullscreen(!flixel_FlxG.get_fullscreen());
+		}
 	}
 	,__class__: StateHandler
 });
@@ -70032,7 +70034,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 223439;
+	this.version = 52949;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
