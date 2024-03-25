@@ -912,7 +912,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "421";
+	app.meta.h["build"] = "425";
 	app.meta.h["company"] = "Yo";
 	app.meta.h["file"] = "Bluey";
 	app.meta.h["name"] = "Bluey";
@@ -3418,6 +3418,7 @@ var Main = function() {
 	}
 	flixel_FlxG.autoPause = false;
 	this.addChild(new flixel_FlxGame(this.gameWidth,this.gameHeight,this.initialState,this.zoom,this.framerate,this.framerate,this.skipSplash,this.startFullscreen));
+	this.enableFullscreen();
 };
 $hxClasses["Main"] = Main;
 Main.__name__ = "Main";
@@ -3430,6 +3431,21 @@ Main.prototype = $extend(openfl_display_Sprite.prototype,{
 	,framerate: null
 	,skipSplash: null
 	,startFullscreen: null
+	,enableFullscreen: function() {
+		var document = window.document;
+		if(document.fullscreenEnabled || Reflect.field(document,"webkitFullscreenEnabled") || Reflect.field(document,"mozFullScreenEnabled") || Reflect.field(document,"msFullscreenEnabled")) {
+			var element = window.document.getElementById("game-container");
+			if(Reflect.field(element,"requestFullscreen")) {
+				Reflect.field(element,"requestFullscreen").apply(element,[]);
+			} else if(Reflect.field(element,"webkitRequestFullscreen")) {
+				Reflect.field(element,"webkitRequestFullscreen").apply(element,[]);
+			} else if(Reflect.field(element,"mozRequestFullScreen")) {
+				Reflect.field(element,"mozRequestFullScreen").apply(element,[]);
+			} else if(Reflect.field(element,"msRequestFullscreen")) {
+				Reflect.field(element,"msRequestFullscreen").apply(element,[]);
+			}
+		}
+	}
 	,__class__: Main
 });
 var DocumentClass = function(current) {
@@ -7606,8 +7622,10 @@ StateHandler.prototype = $extend(flixel_FlxState.prototype,{
 	,white: null
 	,update: function(elapsed) {
 		flixel_FlxState.prototype.update.call(this,elapsed);
-		if(flixel_FlxG.mouse.overlaps(this.white) && flixel_FlxG.mouse._leftButton.current == 2) {
-			flixel_FlxG.set_fullscreen(!flixel_FlxG.get_fullscreen());
+		if(this.white != null) {
+			if(flixel_FlxG.mouse.overlaps(this.white) && flixel_FlxG.mouse._leftButton.current == 2) {
+				flixel_FlxG.set_fullscreen(!flixel_FlxG.get_fullscreen());
+			}
 		}
 	}
 	,__class__: StateHandler
@@ -7719,7 +7737,6 @@ Menu.prototype = $extend(StateHandler.prototype,{
 				if((flixel_FlxG.mouse.overlaps(item) || flixel_FlxG.mouse.overlaps(spr)) && flixel_FlxG.mouse._leftButton.current == 2) {
 					this.selected = true;
 					this.change(item.ID);
-					flixel_FlxG.set_fullscreen(true);
 				}
 			}
 		} else if(!(flixel_FlxG.mouse.overlaps(this.sprGrp) || flixel_FlxG.mouse.overlaps(this.txtGrp)) && !this.selected) {
@@ -70035,7 +70052,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 860858;
+	this.version = 553681;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
