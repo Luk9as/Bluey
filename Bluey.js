@@ -912,14 +912,14 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "300";
+	app.meta.h["build"] = "395";
 	app.meta.h["company"] = "Yo";
 	app.meta.h["file"] = "Bluey";
 	app.meta.h["name"] = "Bluey";
 	app.meta.h["packageName"] = "com.example.myapp";
 	app.meta.h["version"] = "0.0.1";
-	var attributes = { allowHighDPI : false, alwaysOnTop : false, borderless : false, element : null, frameRate : 60, height : 720, hidden : false, maximized : false, minimized : false, parameters : { }, resizable : false, title : "Bluey", width : 1280, x : null, y : null};
-	attributes.context = { antialiasing : 0, background : 0, colorDepth : 32, depth : true, hardware : true, stencil : true, type : null, vsync : false};
+	var attributes = { allowHighDPI : false, alwaysOnTop : false, borderless : false, element : null, frameRate : 60, height : 1080, hidden : false, maximized : false, minimized : false, parameters : { }, resizable : true, title : "Bluey", width : 1920, x : null, y : null};
+	attributes.context = { antialiasing : 0, background : -15000805, colorDepth : 32, depth : true, hardware : true, stencil : true, type : null, vsync : false};
 	if(app.__window == null) {
 		if(config != null) {
 			var _g = 0;
@@ -3416,6 +3416,8 @@ var Main = function() {
 		this.gameWidth = Math.ceil(stageWidth / this.zoom);
 		this.gameHeight = Math.ceil(stageHeight / this.zoom);
 	}
+	flixel_FlxG.set_fullscreen(true);
+	flixel_FlxG.autoPause = false;
 	this.addChild(new flixel_FlxGame(this.gameWidth,this.gameHeight,this.initialState,this.zoom,this.framerate,this.framerate,this.skipSplash,this.startFullscreen));
 };
 $hxClasses["Main"] = Main;
@@ -3645,24 +3647,22 @@ var FlxVideo = function(name) {
 	netConnect.connect(null);
 	this.netStream = new openfl_net_NetStream(netConnect);
 	this.netStream.checkPolicyFile = true;
-	this.netStream.client = { onMetaData : function() {
+	this.netStream.client = { onMetaData : function(metadata) {
 		_gthis.player.attachNetStream(_gthis.netStream);
 		_gthis.player.set_width(flixel_FlxG.width);
 		_gthis.player.set_height(flixel_FlxG.height);
+		_gthis.player.smoothing = true;
+		_gthis.duration = Reflect.getProperty(metadata,"duration");
+		haxe_Log.trace(Reflect.getProperty(metadata,"duration"),{ fileName : "source/FlxVideo.hx", lineNumber : 50, className : "FlxVideo", methodName : "new"});
 	}};
 	netConnect.addEventListener("netStatus",function(event) {
-		haxe_Log.trace(event.info.code,{ fileName : "source/FlxVideo.hx", lineNumber : 47, className : "FlxVideo", methodName : "new"});
+		haxe_Log.trace(event.info.code,{ fileName : "source/FlxVideo.hx", lineNumber : 54, className : "FlxVideo", methodName : "new"});
 		if(event.info.code == "NetStream.Play.Complete") {
-			_gthis.netStream.dispose();
-			if(flixel_FlxG.game.contains(_gthis.player)) {
-				flixel_FlxG.game.removeChild(_gthis.player);
-			}
-			if(_gthis.finishCallback != null) {
-				_gthis.finishCallback();
-			}
+			_gthis.netStream.pause();
 		}
 	});
-	this.netStream.play(name);
+	this.netStream.play(name,-1,{ bitrate : 8000});
+	haxe_Log.trace("Velocidad de bits del video: " + Std.string(this.netStream.client.bitrate) + " kbps",{ fileName : "source/FlxVideo.hx", lineNumber : 64, className : "FlxVideo", methodName : "new"});
 };
 $hxClasses["FlxVideo"] = FlxVideo;
 FlxVideo.__name__ = "FlxVideo";
@@ -3671,6 +3671,7 @@ FlxVideo.prototype = $extend(flixel_FlxBasic.prototype,{
 	finishCallback: null
 	,player: null
 	,netStream: null
+	,duration: null
 	,__class__: FlxVideo
 });
 var HxOverrides = function() { };
@@ -3777,7 +3778,7 @@ ManifestResources.init = function(config) {
 	openfl_text_Font.registerFont(_$_$ASSET_$_$OPENFL_$_$flixel_$fonts_$nokiafc22_$ttf);
 	openfl_text_Font.registerFont(_$_$ASSET_$_$OPENFL_$_$flixel_$fonts_$monsterrat_$ttf);
 	var bundle;
-	var data = "{\"name\":null,\"assets\":\"aoy4:pathy34:assets%2Fdata%2Fdata-goes-here.txty4:sizezy4:typey4:TEXTy2:idR1y7:preloadtgoR2i113764R3y4:FONTy9:classNamey30:__ASSET__assets_fonts_blui_ttfR5y25:assets%2Ffonts%2FBlui.ttfR6tgoR0y31:assets%2Fimages%2Fcards%2F0.pngR2i3500270R3y5:IMAGER5R11R6tgoR0y36:assets%2Fimages%2Fimages-go-here.txtR2zR3R4R5R13R6tgoR0y26:assets%2Fimages%2Fplay.pngR2i2305R3R12R5R14R6tgoR0y29:assets%2Fimages%2FSeason1.pngR2i1005230R3R12R5R15R6tgoR0y29:assets%2Fimages%2FSeason2.pngR2i1271361R3R12R5R16R6tgoR0y29:assets%2Fimages%2FSeason3.pngR2i1197942R3R12R5R17R6tgoR0y28:assets%2Fimages%2Fvolume.pngR2i22013R3R12R5R18R6tgoR0y36:assets%2Fmusic%2Fmusic-goes-here.txtR2zR3R4R5R19R6tgoR0y36:assets%2Fsounds%2Fsounds-go-here.txtR2zR3R4R5R20R6tgoR0y70:assets%2Fvideo%2Fs1%2FBluey%20S01E01%20-%20The%20Magic%20Xylophone.mp4R2i55210264R3R4R5R21R6tgoR0y55:assets%2Fvideo%2Fs1%2FBluey%20S01E02%20-%20Hospital.mp4R2i51785230R3R4R5R22R6tgoR0y59:assets%2Fvideo%2Fs1%2FBluey%20S01E03%20-%20Keepy%20Uppy.mp4R2i55753632R3R4R5R23R6tgoR0y60:assets%2Fvideo%2Fs1%2FBluey%20S01E04%20-%20Daddy%20Robot.mp4R2i55996825R3R4R5R24R6tgoR0y58:assets%2Fvideo%2Fs1%2FBluey%20S01E05%20-%20Shadowlands.mp4R2i40425138R3R4R5R25R6tgoR0y60:assets%2Fvideo%2Fs1%2FBluey%20S01E06%20-%20The%20Weekend.mp4R2i46496811R3R4R5R26R6tgoR0y50:assets%2Fvideo%2Fs1%2FBluey%20S01E07%20-%20BBQ.mp4R2i52126906R3R4R5R27R6tgoR0y55:assets%2Fvideo%2Fs1%2FBluey%20S01E08%20-%20Fruitbat.mp4R2i46163588R3R4R5R28R6tgoR0y60:assets%2Fvideo%2Fs1%2FBluey%20S01E09%20-%20Horsey%20Ride.mp4R2i58306215R3R4R5R29R6tgoR0y52:assets%2Fvideo%2Fs1%2FBluey%20S01E10%20-%20Hotel.mp4R2i44407110R3R4R5R30R6tgoR0y51:assets%2Fvideo%2Fs1%2FBluey%20S01E11%20-%20Bike.mp4R2i43311921R3R4R5R31R6tgoR0y58:assets%2Fvideo%2Fs1%2FBluey%20S01E12%20-%20Bob%20Bilby.mp4R2i48970632R3R4R5R32R6tgoR0y57:assets%2Fvideo%2Fs1%2FBluey%20S01E13%20-%20Spy%20Game.mp4R2i46685393R3R4R5R33R6tgoR0y55:assets%2Fvideo%2Fs1%2FBluey%20S01E14%20-%20Takeaway.mp4R2i49318458R3R4R5R34R6tgoR0y58:assets%2Fvideo%2Fs1%2FBluey%20S01E15%20-%20Butterflies.mp4R2i43735139R3R4R5R35R6tgoR0y58:assets%2Fvideo%2Fs1%2FBluey%20S01E16%20-%20Yoga%20Ball.mp4R2i46929865R3R4R5R36R6tgoR0y54:assets%2Fvideo%2Fs1%2FBluey%20S01E17%20-%20Calypso.mp4R2i50823508R3R4R5R37R6tgoR0y59:assets%2Fvideo%2Fs1%2FBluey%20S01E18%20-%20The%20Doctor.mp4R2i46348562R3R4R5R38R6tgoR0y57:assets%2Fvideo%2Fs1%2FBluey%20S01E19%20-%20The%20Claw.mp4R2i47145648R3R4R5R39R6tgoR0y54:assets%2Fvideo%2Fs1%2FBluey%20S01E20%20-%20Markets.mp4R2i59152992R3R4R5R40R6tgoR0y63:assets%2Fvideo%2Fs1%2FBluey%20S01E21%20-%20Blue%20Mountains.mp4R2i41918665R3R4R5R41R6tgoR0y57:assets%2Fvideo%2Fs1%2FBluey%20S01E22%20-%20The%20Pool.mp4R2i63191512R3R4R5R42R6tgoR0y52:assets%2Fvideo%2Fs1%2FBluey%20S01E23%20-%20Shops.mp4R2i54899567R3R4R5R43R6tgoR0y56:assets%2Fvideo%2Fs1%2FBluey%20S01E24%20-%20Wagonride.mp4R2i53940124R3R4R5R44R6tgoR0y51:assets%2Fvideo%2Fs1%2FBluey%20S01E25%20-%20Taxi.mp4R2i53979677R3R4R5R45R6tgoR0y58:assets%2Fvideo%2Fs1%2FBluey%20S01E26%20-%20The%20Beach.mp4R2i45804232R3R4R5R46R6tgoR0y54:assets%2Fvideo%2Fs1%2FBluey%20S01E27%20-%20Pirates.mp4R2i63025705R3R4R5R47R6tgoR0y55:assets%2Fvideo%2Fs1%2FBluey%20S01E28%20-%20Grannies.mp4R2i52104945R3R4R5R48R6tgoR0y58:assets%2Fvideo%2Fs1%2FBluey%20S01E29%20-%20The%20Creek.mp4R2i64998436R3R4R5R49R6tgoR0y54:assets%2Fvideo%2Fs1%2FBluey%20S01E30%20-%20Fairies.mp4R2i60428533R3R4R5R50R6tgoR0y51:assets%2Fvideo%2Fs1%2FBluey%20S01E31%20-%20Work.mp4R2i53041713R3R4R5R51R6tgoR0y89:assets%2Fvideo%2Fs1%2FBluey%20S01E32%20-%20Bumpy%20And%20The%20Wise%20Old%20Wolfhound.mp4R2i48921938R3R4R5R52R6tgoR0y57:assets%2Fvideo%2Fs1%2FBluey%20S01E33%20-%20Trampoline.mp4R2i54659200R3R4R5R53R6tgoR0y57:assets%2Fvideo%2Fs1%2FBluey%20S01E34%20-%20The%20Dump.mp4R2i49848970R3R4R5R54R6tgoR0y50:assets%2Fvideo%2Fs1%2FBluey%20S01E35%20-%20Zoo.mp4R2i54741692R3R4R5R55R6tgoR0y58:assets%2Fvideo%2Fs1%2FBluey%20S01E36%20-%20Backpackers.mp4R2i59905821R3R4R5R56R6tgoR0y62:assets%2Fvideo%2Fs1%2FBluey%20S01E37%20-%20The%20Adventure.mp4R2i51915509R3R4R5R57R6tgoR0y54:assets%2Fvideo%2Fs1%2FBluey%20S01E38%20-%20Copycat.mp4R2i48349994R3R4R5R58R6tgoR0y62:assets%2Fvideo%2Fs1%2FBluey%20S01E39%20-%20The%20Sleepover.mp4R2i51012723R3R4R5R59R6tgoR0y59:assets%2Fvideo%2Fs1%2FBluey%20S01E40%20-%20Early%20Baby.mp4R2i52434759R3R4R5R60R6tgoR0y64:assets%2Fvideo%2Fs1%2FBluey%20S01E41%20-%20Mums%20and%20Dads.mp4R2i48459512R3R4R5R61R6tgoR0y64:assets%2Fvideo%2Fs1%2FBluey%20S01E42%20-%20Hide%20and%20Seek.mp4R2i49977436R3R4R5R62R6tgoR0y54:assets%2Fvideo%2Fs1%2FBluey%20S01E43%20-%20Camping.mp4R2i45736142R3R4R5R63R6tgoR0y63:assets%2Fvideo%2Fs1%2FBluey%20S01E44%20-%20Mount%20Mumandad.mp4R2i46243723R3R4R5R64R6tgoR0y51:assets%2Fvideo%2Fs1%2FBluey%20S01E45%20-%20Kids.mp4R2i57529429R3R4R5R65R6tgoR0y57:assets%2Fvideo%2Fs1%2FBluey%20S01E46%20-%20Chickenrat.mp4R2i43506539R3R4R5R66R6tgoR0y57:assets%2Fvideo%2Fs1%2FBluey%20S01E47%20-%20Neighbours.mp4R2i45279017R3R4R5R67R6tgoR0y54:assets%2Fvideo%2Fs1%2FBluey%20S01E48%20-%20Teasing.mp4R2i50688028R3R4R5R68R6tgoR0y56:assets%2Fvideo%2Fs1%2FBluey%20S01E49%20-%20Asparagus.mp4R2i52820970R3R4R5R69R6tgoR0y52:assets%2Fvideo%2Fs1%2FBluey%20S01E50%20-%20Shaun.mp4R2i53971686R3R4R5R70R6tgoR0y62:assets%2Fvideo%2Fs1%2FBluey%20S01E51%20-%20Daddy%20Putdown.mp4R2i52581699R3R4R5R71R6tgoR0y63:assets%2Fvideo%2Fs1%2FBluey%20S01E52%20-%20Verandah%20Santa.mp4R2i51049796R3R4R5R72R6tgoR2i2114R3y5:MUSICR5y26:flixel%2Fsounds%2Fbeep.mp3y9:pathGroupaR74y26:flixel%2Fsounds%2Fbeep.ogghR6tgoR2i39706R3R73R5y28:flixel%2Fsounds%2Fflixel.mp3R75aR77y28:flixel%2Fsounds%2Fflixel.ogghR6tgoR2i5794R3y5:SOUNDR5R76R75aR74R76hgoR2i33629R3R79R5R78R75aR77R78hgoR2i15744R3R7R8y35:__ASSET__flixel_fonts_nokiafc22_ttfR5y30:flixel%2Ffonts%2Fnokiafc22.ttfR6tgoR2i29724R3R7R8y36:__ASSET__flixel_fonts_monsterrat_ttfR5y31:flixel%2Ffonts%2Fmonsterrat.ttfR6tgoR0y33:flixel%2Fimages%2Fui%2Fbutton.pngR2i519R3R12R5R84R6tgoR0y36:flixel%2Fimages%2Flogo%2Fdefault.pngR2i3280R3R12R5R85R6tgh\",\"rootPath\":null,\"version\":2,\"libraryArgs\":[],\"libraryType\":null}";
+	var data = "{\"name\":null,\"assets\":\"aoy4:pathy34:assets%2Fdata%2Fdata-goes-here.txty4:sizezy4:typey4:TEXTy2:idR1y7:preloadtgoR2i113764R3y4:FONTy9:classNamey30:__ASSET__assets_fonts_blui_ttfR5y25:assets%2Ffonts%2FBlui.ttfR6tgoR0y31:assets%2Fimages%2Fcards%2F0.pngR2i3500270R3y5:IMAGER5R11R6tgoR0y36:assets%2Fimages%2Fimages-go-here.txtR2zR3R4R5R13R6tgoR0y26:assets%2Fimages%2Fplay.pngR2i2305R3R12R5R14R6tgoR0y29:assets%2Fimages%2FSeason1.pngR2i1005230R3R12R5R15R6tgoR0y29:assets%2Fimages%2FSeason2.pngR2i1271361R3R12R5R16R6tgoR0y29:assets%2Fimages%2FSeason3.pngR2i1197942R3R12R5R17R6tgoR0y28:assets%2Fimages%2Fvolume.pngR2i22013R3R12R5R18R6tgoR0y36:assets%2Fmusic%2Fmusic-goes-here.txtR2zR3R4R5R19R6tgoR0y36:assets%2Fsounds%2Fsounds-go-here.txtR2zR3R4R5R20R6tgoR2i2114R3y5:MUSICR5y26:flixel%2Fsounds%2Fbeep.mp3y9:pathGroupaR22y26:flixel%2Fsounds%2Fbeep.ogghR6tgoR2i39706R3R21R5y28:flixel%2Fsounds%2Fflixel.mp3R23aR25y28:flixel%2Fsounds%2Fflixel.ogghR6tgoR2i5794R3y5:SOUNDR5R24R23aR22R24hgoR2i33629R3R27R5R26R23aR25R26hgoR2i15744R3R7R8y35:__ASSET__flixel_fonts_nokiafc22_ttfR5y30:flixel%2Ffonts%2Fnokiafc22.ttfR6tgoR2i29724R3R7R8y36:__ASSET__flixel_fonts_monsterrat_ttfR5y31:flixel%2Ffonts%2Fmonsterrat.ttfR6tgoR0y33:flixel%2Fimages%2Fui%2Fbutton.pngR2i519R3R12R5R32R6tgoR0y36:flixel%2Fimages%2Flogo%2Fdefault.pngR2i3280R3R12R5R33R6tgh\",\"rootPath\":null,\"version\":2,\"libraryArgs\":[],\"libraryType\":null}";
 	var manifest = lime_utils_AssetManifest.parse(data,ManifestResources.rootPath);
 	var library = lime_utils_AssetLibrary.fromManifest(manifest);
 	lime_utils_Assets.registerLibrary("default",library);
@@ -4931,8 +4932,14 @@ Paths.image = function(key) {
 	return "assets/images/" + key + ".png";
 };
 var PlayState = function(MaxSize) {
+	this.moveTween = null;
+	this.timerMouse = 0;
+	this.moveToTime = 0;
+	this.linkedVideo = false;
+	this.linkedSound = false;
 	this.trans = false;
 	this.visibleVolume = 80;
+	this.videoNum = 10;
 	flixel_FlxState.call(this,MaxSize);
 };
 $hxClasses["PlayState"] = PlayState;
@@ -4940,6 +4947,9 @@ PlayState.__name__ = "PlayState";
 PlayState.__super__ = flixel_FlxState;
 PlayState.prototype = $extend(flixel_FlxState.prototype,{
 	grayShit: null
+	,videoBar: null
+	,ghostVideo: null
+	,videoNum: null
 	,create: function() {
 		flixel_FlxState.prototype.create.call(this);
 		this.trans = true;
@@ -4954,15 +4964,23 @@ PlayState.prototype = $extend(flixel_FlxState.prototype,{
 		this.video.set_antialiasing(true);
 		this.video.updateHitbox();
 		this.trans = false;
-		this.grayShit = new flixel_FlxSprite(0,flixel_FlxG.height - 60).makeGraphic(flixel_FlxG.width,60,-8355712);
-		this.grayShit.set_alpha(0.5);
+		this.grayShit = new flixel_FlxSprite(0,flixel_FlxG.height).makeGraphic(flixel_FlxG.width,80,-8355712);
+		this.grayShit.set_alpha(0.75);
 		this.add(this.grayShit);
+		this.ghostVideo = new flixel_FlxSprite(100,this.grayShit.y + 5).makeGraphic(flixel_FlxG.width - 50,10,-1);
+		this.ghostVideo.set_alpha(0.5);
+		this.ghostVideo.updateHitbox();
+		this.add(this.ghostVideo);
+		this.videoBar = new flixel_FlxSprite(160,this.grayShit.y + 5).makeGraphic(flixel_FlxG.width - 50,10,-1);
+		this.videoBar.updateHitbox();
+		this.add(this.videoBar);
 		this.playButton = new flixel_FlxSprite().loadGraphic(Paths.image("play"),true,173,172);
 		this.playButton.animation.add("playing",[0]);
 		this.playButton.animation.add("stopped",[1]);
 		this.playButton.animation.play("playing");
 		this.playButton.scale.set(0.25,0.25);
 		this.playButton.updateHitbox();
+		this.playButton.set_antialiasing(true);
 		this.playButton.setPosition(100,this.grayShit.y + 30 - this.playButton.get_height() / 2);
 		this.add(this.playButton);
 		this.volumeShit = new flixel_FlxSprite().loadGraphic(Paths.image("volume"),true,239,172);
@@ -4973,6 +4991,7 @@ PlayState.prototype = $extend(flixel_FlxState.prototype,{
 		this.volumeShit.animation.play("full");
 		this.volumeShit.scale.set(0.25,0.25);
 		this.volumeShit.updateHitbox();
+		this.volumeShit.set_antialiasing(true);
 		this.volumeShit.setPosition(100,this.grayShit.y + 30 - this.volumeShit.get_height() / 2);
 		this.add(this.volumeShit);
 		this.ghostBar = new flixel_FlxSprite().makeGraphic(200,10,-1);
@@ -4984,27 +5003,170 @@ PlayState.prototype = $extend(flixel_FlxState.prototype,{
 		this.volumeBar.updateHitbox();
 		this.volumeBar.setPosition(this.volumeShit.x + this.volumeShit.get_width() + 10,this.volumeShit.y + this.volumeShit.get_height() / 2 - 5);
 		this.add(this.volumeBar);
+		this.minus = new flixel_text_FlxText(0,0,0,"-",48);
+		this.minus.setFormat("assets/fonts/Blui.ttf",48);
+		this.minus.set_antialiasing(true);
+		this.minus.setPosition(this.ghostBar.x + this.ghostBar.get_width() + 20,this.grayShit.y + 30 - this.minus.get_height() / 2);
+		this.add(this.minus);
+		this.volNum = new flixel_text_FlxText(0,0,0,"(80)",48);
+		this.volNum.setFormat("assets/fonts/Blui.ttf",48);
+		this.volNum.set_antialiasing(true);
+		this.volNum.setPosition(this.minus.x + this.minus.get_width() + 10,this.grayShit.y + 30 - this.volNum.get_height() / 2);
+		this.add(this.volNum);
+		this.plus = new flixel_text_FlxText(0,0,0,"+",48);
+		this.plus.setFormat("assets/fonts/Blui.ttf",48);
+		this.plus.set_antialiasing(true);
+		this.plus.setPosition(this.volNum.x + this.volNum.get_width() + 10,this.grayShit.y + 30 - this.plus.get_height() / 2);
+		this.add(this.plus);
 	}
 	,playButton: null
 	,volumeShit: null
 	,volumeBar: null
 	,ghostBar: null
+	,minus: null
+	,volNum: null
+	,plus: null
 	,visibleVolume: null
 	,getVolume: function() {
-		var real = this.visibleVolume / 100 * (this.visibleVolume / 100) * 100;
-		var newReal = real | 0;
-		return newReal;
+		return this.visibleVolume / 100 * (this.visibleVolume / 100);
 	}
 	,trans: null
+	,linkedSound: null
+	,linkedVideo: null
+	,check: function(spr,actionID) {
+		if(flixel_FlxG.mouse.overlaps(spr) || this.linkedSound && actionID == 1 || this.linkedVideo && actionID == 5) {
+			if(actionID != 1 && actionID != 5) {
+				spr.set_alpha(1);
+			} else {
+				spr.set_alpha(0.5);
+			}
+			if(actionID == 1 || actionID == 2 || actionID == 3 || actionID == 4) {
+				this.volNum.set_alpha(1);
+			}
+			if(actionID == 1 || actionID == 4) {
+				this.volumeBar.set_alpha(this.volumeShit.set_alpha(1));
+			}
+			if(flixel_FlxG.mouse._leftButton.current == 2) {
+				switch(actionID) {
+				case 0:
+					this.video.pause();
+					spr.animation.play(this.video.paused ? "stopped" : "playing");
+					break;
+				case 1:
+					this.linkedSound = true;
+					break;
+				case 2:
+					this.visibleVolume -= 1;
+					break;
+				case 3:
+					this.visibleVolume += 1;
+					break;
+				case 4:
+					this.visibleVolume = 0;
+					break;
+				case 5:
+					this.linkedVideo = true;
+					if(!this.video.paused) {
+						this.video.pause();
+					}
+					break;
+				}
+			}
+			if(actionID == 1) {
+				var _this = flixel_FlxG.mouse._leftButton;
+				if(_this.current == 1 || _this.current == 2) {
+					this.visibleVolume = (flixel_FlxG.mouse.x - spr.x) / 2 | 0;
+				}
+				if(flixel_FlxG.mouse._leftButton.current == -1) {
+					this.linkedSound = false;
+				}
+			}
+			if(this.visibleVolume < 0) {
+				this.visibleVolume = 0;
+			} else if(this.visibleVolume > 100) {
+				this.visibleVolume = 100;
+			}
+			if(actionID == 5) {
+				var _this = flixel_FlxG.mouse._leftButton;
+				if(_this.current == 1 || _this.current == 2) {
+					this.video.moveTo((flixel_FlxG.mouse.x - 25) * 100 / this.ghostVideo.get_width());
+				}
+				if(flixel_FlxG.mouse._leftButton.current == -1) {
+					this.linkedVideo = false;
+					if(this.video.paused) {
+						this.video.pause();
+					}
+				}
+			}
+		} else if(actionID != 4) {
+			spr.set_alpha(0.5);
+		}
+	}
+	,moveToTime: null
+	,timerMouse: null
 	,update: function(elapsed) {
 		flixel_FlxState.prototype.update.call(this,elapsed);
+		this.video.volume = this.getVolume();
 		if(!this.trans) {
-			this.playButton.setPosition(25,this.grayShit.y + 30 - this.playButton.get_height() / 2);
+			this.playButton.setPosition(25,this.grayShit.y + 50 - this.playButton.get_height() / 2);
+			this.minus.setPosition(this.ghostBar.x + this.ghostBar.get_width() + 20,this.grayShit.y + 50 - this.minus.get_height() / 2);
+			this.volNum.set_text("(" + this.visibleVolume + ")");
+			this.volNum.updateHitbox();
+			this.volNum.setPosition(this.minus.x + this.minus.get_width() + 10,this.grayShit.y + 50 - this.volNum.get_height() / 2);
+			this.plus.setPosition(this.volNum.x + this.volNum.get_width() + 10,this.grayShit.y + 50 - this.plus.get_height() / 2);
+			this.volumeShit.setPosition(100,this.grayShit.y + 50 - this.volumeShit.get_height() / 2);
+			this.ghostBar.setPosition(this.volumeShit.x + this.volumeShit.get_width() + 10,this.volumeShit.y + this.volumeShit.get_height() / 2 - 5);
+			this.volumeBar.setPosition(this.volumeShit.x + this.volumeShit.get_width() + 10,this.volumeShit.y + this.volumeShit.get_height() / 2 - 5);
+			this.volNum.set_alpha(this.volumeBar.set_alpha(this.volumeShit.set_alpha(0.5)));
+			this.ghostVideo.setPosition(25,this.grayShit.y + 7);
+			this.videoBar.setPosition(25,this.grayShit.y + 7);
+			this.check(this.playButton,0);
+			this.check(this.ghostBar,1);
+			this.check(this.minus,2);
+			this.check(this.plus,3);
+			this.check(this.volumeShit,4);
+			this.check(this.ghostVideo,5);
+			if(this.visibleVolume <= 0) {
+				this.volumeShit.animation.play("no");
+			} else if(this.visibleVolume > 0 && this.visibleVolume <= 33) {
+				this.volumeShit.animation.play("low");
+			} else if(this.visibleVolume > 33 && this.visibleVolume <= 66) {
+				this.volumeShit.animation.play("mid");
+			} else if(this.visibleVolume > 66 && this.visibleVolume <= 100) {
+				this.volumeShit.animation.play("full");
+			}
+			if(this.timerMouse <= 0) {
+				this.moveMenu();
+			} else {
+				this.timerMouse -= elapsed;
+			}
+			var _this = flixel_FlxG.mouse;
+			if(_this._prevX != _this.x || _this._prevY != _this.y) {
+				this.moveMenu(true);
+				this.timerMouse = 2.5;
+			}
 		}
 		this.volumeBar.scale.set_x(this.visibleVolume);
 		this.volumeBar.updateHitbox();
+		this.videoBar.scale.set_x(this.video.time * 100 / this.video.length / 100);
+		this.videoBar.updateHitbox();
 	}
 	,video: null
+	,moveTween: null
+	,moveMenu: function(isOpen) {
+		if(isOpen == null) {
+			isOpen = false;
+		}
+		if(this.moveTween != null) {
+			this.moveTween.cancel();
+			this.moveTween = null;
+		}
+		if(isOpen) {
+			this.moveTween = flixel_tweens_FlxTween.tween(this.grayShit,{ y : flixel_FlxG.height - this.grayShit.get_height()},0.5,{ type : 8, ease : flixel_tweens_FlxEase.quadOut});
+		} else {
+			this.moveTween = flixel_tweens_FlxTween.tween(this.grayShit,{ y : flixel_FlxG.height},0.5,{ type : 8, ease : flixel_tweens_FlxEase.quadOut});
+		}
+	}
 	,__class__: PlayState
 });
 var Reflect = function() { };
@@ -5188,30 +5350,37 @@ SelectState.prototype = $extend(flixel_FlxState.prototype,{
 		if(tmp) {
 			_this.set_y((flixel_FlxG.height - _this.get_height()) / 2);
 		}
+		this.card.set_antialiasing(true);
 		this.add(this.card);
 		this.numText = new flixel_text_FlxText(0,0,0,"01",48);
 		this.numText.setFormat("assets/fonts/Blui.ttf",48);
 		this.numText.setPosition(flixel_FlxG.width / 3 * 2 + 135,this.card.y);
+		this.numText.set_antialiasing(true);
 		this.add(this.numText);
 		this.minus = new flixel_text_FlxText(0,0,0,"-",48);
 		this.minus.setFormat("assets/fonts/Blui.ttf",48);
 		this.minus.setPosition(this.numText.x - (this.minus.get_width() + 25),this.card.y);
+		this.minus.set_antialiasing(true);
 		this.add(this.minus);
 		this.minusTen = new flixel_text_FlxText(0,0,0,"(10) -",48);
 		this.minusTen.setFormat("assets/fonts/Blui.ttf",48);
 		this.minusTen.setPosition(this.numText.x - (this.minusTen.get_width() + 25),this.card.y + this.minusTen.get_height() + 10);
+		this.minusTen.set_antialiasing(true);
 		this.add(this.minusTen);
 		this.plus = new flixel_text_FlxText(0,0,0,"+",48);
 		this.plus.setFormat("assets/fonts/Blui.ttf",48);
 		this.plus.setPosition(this.numText.x + this.numText.get_width() + 25,this.card.y);
+		this.plus.set_antialiasing(true);
 		this.add(this.plus);
 		this.plusTen = new flixel_text_FlxText(0,0,0,"+ (10)",48);
 		this.plusTen.setFormat("assets/fonts/Blui.ttf",48);
 		this.plusTen.setPosition(this.numText.x + this.numText.get_width() + 25,this.card.y + this.plusTen.get_height() + 10);
+		this.plusTen.set_antialiasing(true);
 		this.add(this.plusTen);
 		this.play = new flixel_text_FlxText(0,0,0,"Play",48);
 		this.play.setFormat("assets/fonts/Blui.ttf",48);
 		this.play.setPosition(this.numText.x + this.numText.get_width() / 2 - this.play.get_width() / 2,this.card.y + this.card.get_height() - this.play.get_height());
+		this.play.set_antialiasing(true);
 		this.add(this.play);
 		this.card.set_x(flixel_FlxG.width / 3 - this.card.get_width() / 2);
 		var fh = this.card;
@@ -8384,13 +8553,21 @@ var VideoShit = function(name,X,Y) {
 	if(X == null) {
 		X = 0;
 	}
+	this.paused = false;
+	this.length = 0;
+	this.time = 0;
+	this.soundTransform = new openfl_media_SoundTransform();
+	this.volume = 0.64;
 	flixel_FlxSprite.call(this,X,Y);
 	this.makeGraphic(1,1,0);
 	this.video = new FlxVideo(name);
 	this.bitmap = this.video.player;
 	this.bitmap.set_alpha(0);
-	this.bitmapShit = new openfl_display_BitmapData(1280,720,true,0);
-	this.bitmapShit.draw(this.bitmap);
+	this.bitmap.smoothing = true;
+	this.bitmapShit = new openfl_display_BitmapData(flixel_FlxG.width,flixel_FlxG.height,true,0);
+	this.bitmapShit.drawWithQuality(this.bitmap,new openfl_geom_Matrix(flixel_FlxG.width / this.bitmap.get_width(),0,0,flixel_FlxG.height / this.bitmap.get_height()),null,null,null,true);
+	this.video.netStream.set_soundTransform(this.soundTransform);
+	this.set_antialiasing(true);
 };
 $hxClasses["VideoShit"] = VideoShit;
 VideoShit.__name__ = "VideoShit";
@@ -8399,9 +8576,36 @@ VideoShit.prototype = $extend(flixel_FlxSprite.prototype,{
 	bitmap: null
 	,bitmapShit: null
 	,video: null
+	,volume: null
+	,soundTransform: null
+	,time: null
+	,length: null
+	,paused: null
+	,pause: function() {
+		if(!this.paused) {
+			this.video.netStream.pause();
+		} else {
+			this.video.netStream.resume();
+		}
+		this.paused = !this.paused;
+	}
+	,moveTo: function(percent) {
+		var time = percent;
+		if(time < 0) {
+			time = 0;
+		} else if(time > 100) {
+			time = 100;
+		}
+		this.video.netStream.seek(time / 100 * this.length);
+	}
 	,update: function(elapsed) {
 		flixel_FlxSprite.prototype.update.call(this,elapsed);
-		this.bitmapShit.draw(this.bitmap);
+		this.soundTransform.volume = this.volume;
+		this.video.netStream.set_soundTransform(this.soundTransform);
+		this.time = this.video.netStream.time;
+		this.length = this.video.duration;
+		haxe_Log.trace("time: " + this.time + ", length: " + this.length,{ fileName : "source/VideoShit.hx", lineNumber : 82, className : "VideoShit", methodName : "update"});
+		this.bitmapShit.drawWithQuality(this.bitmap,new openfl_geom_Matrix(flixel_FlxG.width / this.bitmap.get_width(),0,0,flixel_FlxG.height / this.bitmap.get_height()),null,null,null,true);
 		this.set_pixels(this.bitmapShit.clone());
 	}
 	,__class__: VideoShit
@@ -41812,7 +42016,7 @@ flixel_util_FlxArrayUtil.flatten2DArray_Int = function(array) {
 	}
 	return result;
 };
-flixel_util_FlxArrayUtil.fastSplice_flixel_tweens_FlxTween = function(array,element) {
+flixel_util_FlxArrayUtil.fastSplice_flixel_util_FlxTimer = function(array,element) {
 	var index = array.indexOf(element);
 	if(index != -1) {
 		array[index] = array[array.length - 1];
@@ -41821,7 +42025,7 @@ flixel_util_FlxArrayUtil.fastSplice_flixel_tweens_FlxTween = function(array,elem
 	}
 	return array;
 };
-flixel_util_FlxArrayUtil.fastSplice_flixel_util_FlxTimer = function(array,element) {
+flixel_util_FlxArrayUtil.fastSplice_flixel_tweens_FlxTween = function(array,element) {
 	var index = array.indexOf(element);
 	if(index != -1) {
 		array[index] = array[array.length - 1];
@@ -69658,7 +69862,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 424984;
+	this.version = 939266;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
