@@ -912,7 +912,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "420";
+	app.meta.h["build"] = "421";
 	app.meta.h["company"] = "Yo";
 	app.meta.h["file"] = "Bluey";
 	app.meta.h["name"] = "Bluey";
@@ -7719,6 +7719,7 @@ Menu.prototype = $extend(StateHandler.prototype,{
 				if((flixel_FlxG.mouse.overlaps(item) || flixel_FlxG.mouse.overlaps(spr)) && flixel_FlxG.mouse._leftButton.current == 2) {
 					this.selected = true;
 					this.change(item.ID);
+					flixel_FlxG.set_fullscreen(true);
 				}
 			}
 		} else if(!(flixel_FlxG.mouse.overlaps(this.sprGrp) || flixel_FlxG.mouse.overlaps(this.txtGrp)) && !this.selected) {
@@ -70034,7 +70035,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 52949;
+	this.version = 860858;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
