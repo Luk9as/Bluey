@@ -912,7 +912,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "395";
+	app.meta.h["build"] = "399";
 	app.meta.h["company"] = "Yo";
 	app.meta.h["file"] = "Bluey";
 	app.meta.h["name"] = "Bluey";
@@ -3418,6 +3418,9 @@ var Main = function() {
 	}
 	flixel_FlxG.set_fullscreen(true);
 	flixel_FlxG.autoPause = false;
+	if(flixel_FlxG.html5.onMobile) {
+		flixel_FlxG.mouse.set_visible(false);
+	}
 	this.addChild(new flixel_FlxGame(this.gameWidth,this.gameHeight,this.initialState,this.zoom,this.framerate,this.framerate,this.skipSplash,this.startFullscreen));
 };
 $hxClasses["Main"] = Main;
@@ -3444,6 +3447,91 @@ DocumentClass.__super__ = Main;
 DocumentClass.prototype = $extend(Main.prototype,{
 	__class__: DocumentClass
 });
+var ContactFinger = function() { };
+$hxClasses["ContactFinger"] = ContactFinger;
+ContactFinger.__name__ = "ContactFinger";
+ContactFinger.justPressed = function() {
+	if(flixel_FlxG.touches.getFirst() == null) {
+		return false;
+	} else {
+		return flixel_FlxG.touches.getFirst().input.current == 2;
+	}
+};
+ContactFinger.justReleased = function() {
+	if(flixel_FlxG.touches.getFirst() == null) {
+		return false;
+	} else {
+		return flixel_FlxG.touches.getFirst().input.current == -1;
+	}
+};
+ContactFinger.pressed = function() {
+	if(flixel_FlxG.touches.getFirst() == null) {
+		return false;
+	} else {
+		var _this = flixel_FlxG.touches.getFirst().input;
+		if(_this.current != 1) {
+			return _this.current == 2;
+		} else {
+			return true;
+		}
+	}
+};
+ContactFinger.objectJustPressed = function(spr) {
+	if(flixel_FlxG.touches.list[0] == null) {
+		return false;
+	} else {
+		var bul = false;
+		var _g = 0;
+		var _g1 = flixel_FlxG.touches.list.length;
+		while(_g < _g1) {
+			var i = _g++;
+			bul = flixel_FlxG.touches.list[i].overlaps(spr) && flixel_FlxG.touches.list[i].input.current == 2;
+			if(bul) {
+				break;
+			}
+		}
+		return bul;
+	}
+};
+ContactFinger.objectJustReleased = function(spr) {
+	if(flixel_FlxG.touches.list[0] == null) {
+		return false;
+	} else {
+		var bul = false;
+		var _g = 0;
+		var _g1 = flixel_FlxG.touches.list.length;
+		while(_g < _g1) {
+			var i = _g++;
+			bul = flixel_FlxG.touches.list[i].input.current == -1;
+			if(bul) {
+				break;
+			}
+		}
+		return bul;
+	}
+};
+ContactFinger.objectPressed = function(spr) {
+	if(flixel_FlxG.touches.list[0] == null) {
+		return false;
+	} else {
+		var bul = false;
+		var _g = 0;
+		var _g1 = flixel_FlxG.touches.list.length;
+		while(_g < _g1) {
+			var i = _g++;
+			if(flixel_FlxG.touches.list[i].overlaps(spr)) {
+				var _this = flixel_FlxG.touches.list[i].input;
+				bul = _this.current == 1 || _this.current == 2;
+			} else {
+				bul = false;
+			}
+			if(bul) {
+				break;
+			}
+		}
+		return bul;
+	}
+};
 var EReg = function(r,opt) {
 	this.r = new RegExp(r,opt.split("u").join(""));
 };
@@ -5034,19 +5122,76 @@ PlayState.prototype = $extend(flixel_FlxState.prototype,{
 	,linkedSound: null
 	,linkedVideo: null
 	,check: function(spr,actionID) {
-		if(flixel_FlxG.mouse.overlaps(spr) || this.linkedSound && actionID == 1 || this.linkedVideo && actionID == 5) {
-			if(actionID != 1 && actionID != 5) {
-				spr.set_alpha(1);
-			} else {
+		if(!flixel_FlxG.html5.onMobile) {
+			if(flixel_FlxG.mouse.overlaps(spr) || this.linkedSound && actionID == 1 || this.linkedVideo && actionID == 5) {
+				if(actionID != 1 && actionID != 5) {
+					spr.set_alpha(1);
+				} else {
+					spr.set_alpha(0.5);
+				}
+				if(actionID == 1 || actionID == 2 || actionID == 3 || actionID == 4) {
+					this.volNum.set_alpha(1);
+				}
+				if(actionID == 1 || actionID == 4) {
+					this.volumeBar.set_alpha(this.volumeShit.set_alpha(1));
+				}
+				if(flixel_FlxG.mouse._leftButton.current == 2) {
+					switch(actionID) {
+					case 0:
+						this.video.pause();
+						spr.animation.play(this.video.paused ? "stopped" : "playing");
+						break;
+					case 1:
+						this.linkedSound = true;
+						break;
+					case 2:
+						this.visibleVolume -= 1;
+						break;
+					case 3:
+						this.visibleVolume += 1;
+						break;
+					case 4:
+						this.visibleVolume = 0;
+						break;
+					case 5:
+						this.linkedVideo = true;
+						if(!this.video.paused) {
+							this.video.pause();
+						}
+						break;
+					}
+				}
+				if(actionID == 1 && this.linkedSound) {
+					var _this = flixel_FlxG.mouse._leftButton;
+					if(_this.current == 1 || _this.current == 2) {
+						this.visibleVolume = (flixel_FlxG.mouse.x - spr.x) / 2 | 0;
+					}
+					if(flixel_FlxG.mouse._leftButton.current == -1) {
+						this.linkedSound = false;
+					}
+				}
+				if(this.visibleVolume < 0) {
+					this.visibleVolume = 0;
+				} else if(this.visibleVolume > 100) {
+					this.visibleVolume = 100;
+				}
+				if(actionID == 5 && this.linkedVideo) {
+					var _this = flixel_FlxG.mouse._leftButton;
+					if(_this.current == 1 || _this.current == 2) {
+						this.video.moveTo((flixel_FlxG.mouse.x - 25) * 100 / this.ghostVideo.get_width());
+					}
+					if(flixel_FlxG.mouse._leftButton.current == -1) {
+						this.linkedVideo = false;
+						if(this.video.paused) {
+							this.video.pause();
+						}
+					}
+				}
+			} else if(actionID != 4) {
 				spr.set_alpha(0.5);
 			}
-			if(actionID == 1 || actionID == 2 || actionID == 3 || actionID == 4) {
-				this.volNum.set_alpha(1);
-			}
-			if(actionID == 1 || actionID == 4) {
-				this.volumeBar.set_alpha(this.volumeShit.set_alpha(1));
-			}
-			if(flixel_FlxG.mouse._leftButton.current == 2) {
+		} else {
+			if(ContactFinger.objectJustPressed(spr)) {
 				switch(actionID) {
 				case 0:
 					this.video.pause();
@@ -5072,34 +5217,30 @@ PlayState.prototype = $extend(flixel_FlxState.prototype,{
 					break;
 				}
 			}
-			if(actionID == 1) {
-				var _this = flixel_FlxG.mouse._leftButton;
-				if(_this.current == 1 || _this.current == 2) {
-					this.visibleVolume = (flixel_FlxG.mouse.x - spr.x) / 2 | 0;
-				}
-				if(flixel_FlxG.mouse._leftButton.current == -1) {
-					this.linkedSound = false;
-				}
-			}
 			if(this.visibleVolume < 0) {
 				this.visibleVolume = 0;
 			} else if(this.visibleVolume > 100) {
 				this.visibleVolume = 100;
 			}
-			if(actionID == 5) {
-				var _this = flixel_FlxG.mouse._leftButton;
-				if(_this.current == 1 || _this.current == 2) {
+			if(actionID == 5 && this.linkedVideo) {
+				if(ContactFinger.pressed()) {
 					this.video.moveTo((flixel_FlxG.mouse.x - 25) * 100 / this.ghostVideo.get_width());
 				}
-				if(flixel_FlxG.mouse._leftButton.current == -1) {
+				if(ContactFinger.justReleased()) {
 					this.linkedVideo = false;
 					if(this.video.paused) {
 						this.video.pause();
 					}
 				}
 			}
-		} else if(actionID != 4) {
-			spr.set_alpha(0.5);
+			if(actionID == 1 && this.linkedSound) {
+				if(ContactFinger.pressed()) {
+					this.visibleVolume = (flixel_FlxG.mouse.x - spr.x) / 2 | 0;
+				}
+				if(ContactFinger.justReleased()) {
+					this.linkedSound = false;
+				}
+			}
 		}
 	}
 	,moveToTime: null
@@ -69862,7 +70003,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 939266;
+	this.version = 147249;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
